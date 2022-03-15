@@ -1,0 +1,34 @@
+addfirst(processing)
+        {
+            action(ExportToText)
+            {
+                Caption = 'Export to text';
+                ApplicationArea = all;
+                PromotedCategory = Process;
+                Promoted = true;
+                Image = Export;
+                trigger OnAction()
+                var
+                    tempblob: Codeunit "Temp Blob";
+                    Ins: InStream;
+                    outs: OutStream;
+                    filename: Text;
+                    txtBuilder: TextBuilder;
+                    customer: Record Customer;
+                begin
+                    filename := 'TestFile_' + UserId + '_' + Format(CurrentDateTime) + '.txt';
+                    txtBuilder.AppendLine(customer."Post Code" + customer.Name + customer."Name 2" + customer."No.");
+                    customer.Reset();
+                    if customer.FindSet() then
+                        repeat
+                            txtBuilder.AppendLine(Format(customer."Post Code") + ',' + Format(customer."No.") + ',' + 'Obaidullah0');
+                        until customer.Next() = 0;
+
+                    tempblob.CreateOutStream(outs);
+                    outs.WriteText(txtBuilder.ToText());
+                    tempblob.CreateInStream(Ins);
+                    DownloadFromStream(Ins, '', '', '', filename);
+                end;
+
+            }
+}
